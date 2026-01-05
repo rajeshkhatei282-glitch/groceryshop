@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart Grocery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #020617;
+            color: #e5e7eb;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: linear-gradient(90deg, #020617, #020617, #14532d);
+            padding: 0 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .8);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .cart-btn {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            gap: 8px;
+            transition: transform .3s;
+        }
+
+        .cart-btn.shake {
+            animation: shake 0.5s;
+        }
+
+        .cart-count {
+            background: #dc2626;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 50%;
+            font-size: 12px;
+            transition: transform .3s;
+        }
+
+        .cart-count.bounce {
+            animation: bounce 0.4s;
+        }
+
+        /* ANIMATIONS */
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        @keyframes fly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.1); opacity: 0; }
+        }
+
+        /* HERO */
+        .hero {
+            padding: 110px 8% 30px;
+            background: linear-gradient(135deg, #020617, #022c22, #064e3b);
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 42px;
+            color: #a7f3d0;
+        }
+
+        .hero p {
+            color: #d1fae5;
+            font-size: 18px;
+        }
+
+        /* MAIN CONTENT */
+        main {
+            display: flex;
+            width: 100%;
+            padding: 20px 8%;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 200px;
+            background: linear-gradient(180deg, #064e3b, #022c22);
+            border-radius: 12px;
+            padding: 15px;
+            color: #a7f3d0;
+            flex-shrink: 0;
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin: 6px 0;
+            padding: 8px;
+            background: #16a34a;
+            color: #020617;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: .2s;
+            font-weight: bold;
+        }
+
+        .sidebar button:hover {
+            transform: scale(1.05);
+        }
+
+        /* SEARCH BOX */
+        .search-box {
+            width: 100%;
+            margin-bottom: 15px;
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            font-size: 14px;
+            background: #f0fdf4;
+            color: #064e3b;
+        }
+
+        .search-box input::placeholder {
+            color: #16a34a;
+        }
+
+        .search-box button {
+            padding: 10px 16px;
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .search-box button:hover {
+            background: #22c55e;
+        }
+
+        /* PRODUCTS GRID */
+        .products {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .product {
+            background: linear-gradient(180deg, #ffffff, #ecfdf5);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(34, 197, 94, .2);
+            transition: transform .3s, box-shadow .3s;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(34, 197, 94, .4);
+        }
+
+        .product img {
+            width: 80px;
+            margin-bottom: 8px;
+            transition: transform .3s;
+        }
+
+        .product img:hover {
+            transform: scale(1.1);
+        }
+
+        .product h4 {
+            font-size: 14px;
+            color: #064e3b;
+            margin: 5px 0;
+        }
+
+        .price {
+            font-weight: bold;
+            color: #16a34a;
+            font-size: 14px;
+        }
+
+        .product button {
+            margin-top: 8px;
+            padding: 6px 12px;
+            border: none;
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            color: white;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .product button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(34, 197, 94, .4);
+        }
+
+        /* SLIDING CART */
+        .cart {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 360px;
+            height: 100%;
+            background: #020617;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, .8);
+            padding: 20px;
+            transition: .3s;
+            overflow-y: auto;
+            z-index: 2000;
+        }
+
+        .cart.active {
+            right: 0;
+        }
+
+        .cart h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #86efac;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #1f2937;
+            padding-bottom: 10px;
+        }
+
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .cart-item div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cart-item button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .cart-item button:hover {
+            background: #16a34a;
+            color: #020617;
+        }
+
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #4ade80;
+            text-align: right;
+        }
+
+        .close-cart {
+            background: #14532d;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        /* INVOICE MODAL */
+        .invoice {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .invoice-box {
+            background: white;
+            color: #020617;
+            width: 420px;
+            padding: 25px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .close-invoice {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .invoice-box h2 {
+            text-align: center;
+            color: #14532d;
+            margin-bottom: 10px;
+        }
+
+        .invoice-box table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .invoice-box th,
+        .invoice-box td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .invoice-box .total {
+            color: #14532d;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .print-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #16a34a;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #9ca3af;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 900px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 4%;
+            }
+
+            .logo {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+
+            .cart-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 0;
+            }
+
+            .hero {
+                padding: 80px 4% 20px;
+            }
+
+            .hero h2 {
+                font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            main {
+                flex-direction: column;
+                padding: 15px 4%;
+                gap: 15px;
+            }
+
+            .sidebar {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+
+            .sidebar h3 {
+                width: 100%;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .sidebar button {
+                flex: 1 1 45%;
+                margin: 5px;
+                padding: 10px 0;
+                font-size: 14px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input,
+            .search-box button {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .products {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .product img {
+                width: 60px;
+            }
+
+            .product h4,
+            .product .price,
+            .product button {
+                font-size: 12px;
+            }
+
+            .cart {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .invoice-box {
+                width: 90%;
+                padding: 15px;
+            }
+
+            .invoice-box table th,
+            .invoice-box table td {
+                font-size: 12px;
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- BODY CONTENT SAME AS ORIGINAL (NAVBAR, HERO, SIDEBAR, PRODUCTS, CART, INVOICE, FOOTER) -->
+
+
+    <div class="navbar">
+        <div class="logo">🥦 FreshMart</div>
+        <button class="cart-btn" id="cartBtn" onclick="toggleCart()">🛒 Cart <span id="cartCount"
+                class="cart-count">0</span></button>
+    </div>
+
+    <div class="hero">
+        <h2>Fresh & Healthy Groceries</h2>
+        <p>Premium quality groceries delivered fast</p>
+    </div>
+
+    <main>
+        <div class="sidebar">
+            <h3>Categories</h3>
+            <button onclick="filterCategory('Vegetables')">Vegetables</button>
+            <button onclick="filterCategory('Fruits')">Fruits</button>
+            <button onclick="filterCategory('Dairy')">Dairy</button>
+            <button onclick="filterCategory('Grains')">Grains</button>
+            <button onclick="filterCategory('All')">All Products</button>
+        </div>
+        <div style="flex:1;">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+                <button onclick="searchProducts()">🔍</button>
+            </div>
+            <div class="products" id="productGrid"></div>
+        </div>
+    </main>
+
+    <div class="cart" id="cart">
+        <h3>🛒 Your Cart</h3>
+        <div id="cartItems"></div>
+        <p class="total">Total: ₹<span id="total">0</span></p>
+        <button class="close-cart" onclick="toggleCart()">Close Cart</button>
+        <button class="close-cart" onclick="openInvoice()">🧾 Generate Bill</button>
+    </div>
+
+    <div class="invoice" id="invoice" onclick="closeInvoice(event)">
+        <div class="invoice-box" onclick="event.stopPropagation()">
+            <button class="close-invoice" onclick="closeInvoice()">✕</button>
+            <h2>FreshMart Invoice</h2>
+            <p>Date: <span id="invDate"></span></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceItems"></tbody>
+            </table>
+            <p class="total">Total: ₹<span id="invTotal"></span></p>
+            <button class="print-btn" onclick="printInvoice()">🖨️ Print / Download</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>📞 9876543210 | 📍 Your City</p>
+        <p>© 2026 FreshMart Grocery Store</p>
+    </footer>
+
+    <script>
+        const products = [
+            { name: "Tomatoes", price: 40, category: "Vegetables", img: "https://cdn-icons-png.flaticon.com/512/415/415733.png" },
+            { name: "Apples", price: 120, category: "Fruits", img: "https://cdn-icons-png.flaticon.com/512/3082/3082034.png" },
+            { name: "Milk", price: 55, category: "Dairy", img: "https://cdn-icons-png.flaticon.com/512/590/590685.png" },
+            { name: "Rice", price: 70, category: "Grains", img: "https://cdn-icons-png.flaticon.com/512/1046/1046857.png" },
+            { name: "Oil", price: 160, category: "Grains", img: "https://cdn-icons-png.flaticon.com/512/1995/1995475.png" },
+            { name: "Potatoes", price: 30, category: "Vegetables", img: "https://cdn-icons-png.flaticon.com/512/2909/2909764.png" },
+            { name: "Onions", price: 35, category: "Vegetables", img: "https://cdn-icons-png.flaticon.com/512/2909/2909801.png" },
+            { name: "Sugar", price: 45, category: "Grains", img: "https://cdn-icons-png.flaticon.com/512/2674/2674635.png" },
+            { name: "Bananas", price: 50, category: "Fruits", img: "https://cdn-icons-png.flaticon.com/512/135/135620.png" },
+            { name: "Eggs", price: 85, category: "Dairy", img: "https://cdn-icons-png.flaticon.com/512/3523/3523063.png" },
+        ];
+
+        let cart = [];
+
+        function displayProducts(list) {
+            const grid = document.getElementById('productGrid'); grid.innerHTML = "";
+            list.forEach(p => {
+                const div = document.createElement('div'); div.className = 'product';
+                div.innerHTML = `<img src="${p.img}">
+        <h4>${p.name}</h4><p class="price">₹${p.price}</p>
+        <button onclick="addToCart('${p.name}',${p.price},'${p.img}',this)">Add to Cart</button>`;
+                grid.appendChild(div);
+            });
+        }
+        displayProducts(products);
+
+        function searchProducts() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            displayProducts(filtered);
+        }
+        function filterCategory(cat) { cat === 'All' ? displayProducts(products) : displayProducts(products.filter(p => p.category === cat)); }
+
+        // CART FUNCTIONS WITH FLY
+        function addToCart(name, price, img, btn) {
+            let item = cart.find(i => i.name === name);
+            item ? item.qty++ : cart.push({ name, price, qty: 1, img });
+            updateCart();
+            animateFly(btn, img);
+        }
+
+        function updateCart() {
+            const items = document.getElementById("cartItems"); let total = 0, count = 0; items.innerHTML = "";
+            cart.forEach((item, i) => {
+                total += item.price * item.qty; count += item.qty;
+                items.innerHTML += `<div class="cart-item"><img src="${item.img}"><span>${item.name}</span><div>
+        <button onclick="changeQty(${i},1)">+</button><span>${item.qty}</span><button onclick="changeQty(${i},-1)">-</button></div>
+        <span>₹${item.price * item.qty}</span></div>`;
+            });
+            document.getElementById("total").innerText = total;
+            const cartCount = document.getElementById("cartCount");
+            cartCount.innerText = count;
+            cartCount.classList.add('bounce');
+            document.getElementById('cartBtn').classList.add('shake');
+            setTimeout(() => { cartCount.classList.remove('bounce'); document.getElementById('cartBtn').classList.remove('shake'); }, 500);
+        }
+        function changeQty(i, val) { cart[i].qty += val; if (cart[i].qty <= 0) cart.splice(i, 1); updateCart(); }
+        function toggleCart() { document.getElementById("cart").classList.toggle("active"); }
+
+        // INVOICE
+        function openInvoice() {
+            if (cart.length === 0) { alert("Cart is empty"); return; }
+            document.getElementById("invoice").style.display = "flex";
+            document.getElementById("invDate").innerText = new Date().toLocaleString();
+            const tbody = document.getElementById("invoiceItems"); tbody.innerHTML = "";
+            let total = 0; cart.forEach(i => { total += i.price * i.qty; tbody.innerHTML += `<tr><td>${i.name}</td><td>${i.qty}</td><td>₹${i.price * i.qty}</td></tr>`; });
+            document.getElementById("invTotal").innerText = total;
+        }
+        function closeInvoice(e) { document.getElementById("invoice").style.display = "none"; }
+        function printInvoice() { window.print(); }
+
+        // FLY ANIMATION
+        function animateFly(btn, imgSrc) {
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.style.position = 'fixed';
+            const rect = btn.getBoundingClientRect();
+            img.style.left = rect.left + 'px';
+            img.style.top = rect.top + 'px';
+            img.style.width = '60px';
+            img.style.height = '60px';
+            img.style.zIndex = 3000;
+            img.style.transition = 'all 0.8s ease-in-out';
+            document.body.appendChild(img);
+            const cartBtn = document.getElementById('cartBtn');
+            const cartRect = cartBtn.getBoundingClientRect();
+            setTimeout(() => {
+                img.style.left = cartRect.left + 'px';
+                img.style.top = cartRect.top + 'px';
+                img.style.width = '20px';
+                img.style.height = '20px';
+                img.style.opacity = 0;
+            }, 50);
+            setTimeout(() => { document.body.removeChild(img); }, 850);
+        }
+    </script>
+</body>
+
+</html>
